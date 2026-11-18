@@ -1,3 +1,8 @@
+using PropertyManagementSystem.Configuration;
+using PropertyManagementSystem.Data;
+using PropertyManagementSystem.Repository;
+using PropertyManagementSystem.Services;
+
 namespace PropertyManagementSystem
 {
     internal static class Program
@@ -8,10 +13,22 @@ namespace PropertyManagementSystem
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+
+            var contextFactory = new RuntimeDbContextFactory(
+                AppConfiguration.GetConnectionString());
+            var userRepository = new UserRepository(contextFactory);
+            var propertyRepository = new PropertyRepository(contextFactory);
+            var authenticationService = new AuthenticationService(userRepository);
+            var userAccountService = new UserAccountService(userRepository);
+            var propertyManagementService = new PropertyManagementService(propertyRepository);
+            var currentUserSession = new CurrentUserSession();
+
+            Application.Run(new Form1(
+                authenticationService,
+                currentUserSession,
+                userAccountService,
+                propertyManagementService));
         }
     }
 }

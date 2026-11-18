@@ -2,3 +2,6 @@
 bin/
 obj/
 *.user
+
+# Local system flow study
+/appFlow/
